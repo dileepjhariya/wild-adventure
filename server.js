@@ -9,11 +9,11 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); 
 
-// 🔴 SETTINGS (Apni Keys aur Password check kar lein)
+// 🔴 SETTINGS (Apna Password check kar lein)
 const RAZORPAY_KEY_ID = 'rzp_test_S2gHdEXUA554D9';
 const RAZORPAY_KEY_SECRET = 'Q6g7wvjFMoSa5dN5wSm5IsqC';
 const MY_EMAIL = 'wildadventure1998@gmail.com'; 
-const MY_EMAIL_PASSWORD = 'dbmopxsdxxieimmr'; // 🔴 WO 16-DIGIT CODE YAHAN DALEIN
+const MY_EMAIL_PASSWORD = 'dbmopxsdxxieimmr'; // 🔴 APNA 16-DIGIT APP PASSWORD YAHAN DALEIN
 
 const razorpay = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
 
@@ -29,9 +29,9 @@ app.post('/create-order', async (req, res) => {
     } catch (error) { res.status(500).send(error); }
 });
 
-// 🔴 EMAIL LOGIC (FIXED FOR RENDER SERVER)
+// 🔴 EMAIL LOGIC (UPDATED: Port 587)
 app.post('/send-email', (req, res) => {
-    console.log("📨 Sending Email with Full Passenger List...");
+    console.log("📨 Sending Email via Port 587...");
     const data = req.body;
 
     let passengerRows = '';
@@ -51,11 +51,11 @@ app.post('/send-email', (req, res) => {
         passengerRows = '<tr><td colspan="5">No Passenger Data</td></tr>';
     }
 
-    // 🛠️ YAHAN CHANGE KIYA HAI (Port 465 Fix)
+    // 🛠️ YAHAN CHANGE KIYA HAI (Port 587 - Universal Port)
     const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com', // Gmail ka pakka address
-        port: 465,              // Secure Port (Server friendly)
-        secure: true,           // Security ON
+        host: 'smtp.gmail.com',
+        port: 587,              // Ye port kabhi block nahi hota
+        secure: false,          // 587 ke liye ise false rakhte hain
         auth: {
             user: MY_EMAIL,
             pass: MY_EMAIL_PASSWORD
@@ -109,7 +109,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Fail'); 
         } 
         else { 
-            console.log("✅ Email Sent Successfully!"); 
+            console.log("✅ Email Sent Successfully via Port 587!"); 
             res.status(200).send('Sent'); 
         }
     });
