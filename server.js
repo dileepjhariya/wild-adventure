@@ -9,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); 
 
-// 🔴 SETTINGS (Apni Keys aur App Password check karein)
+// 🔴 SETTINGS (Apni Keys aur Password check kar lein)
 const RAZORPAY_KEY_ID = 'rzp_test_S2gHdEXUA554D9';
 const RAZORPAY_KEY_SECRET = 'Q6g7wvjFMoSa5dN5wSm5IsqC';
 const MY_EMAIL = 'wildadventure1998@gmail.com'; 
@@ -29,7 +29,7 @@ app.post('/create-order', async (req, res) => {
     } catch (error) { res.status(500).send(error); }
 });
 
-// 🔴 EMAIL LOGIC (Full Table Support)
+// 🔴 EMAIL LOGIC (FIXED FOR RENDER SERVER)
 app.post('/send-email', (req, res) => {
     console.log("📨 Sending Email with Full Passenger List...");
     const data = req.body;
@@ -51,9 +51,15 @@ app.post('/send-email', (req, res) => {
         passengerRows = '<tr><td colspan="5">No Passenger Data</td></tr>';
     }
 
+    // 🛠️ YAHAN CHANGE KIYA HAI (Port 465 Fix)
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: { user: MY_EMAIL, pass: MY_EMAIL_PASSWORD }
+        host: 'smtp.gmail.com', // Gmail ka pakka address
+        port: 465,              // Secure Port (Server friendly)
+        secure: true,           // Security ON
+        auth: {
+            user: MY_EMAIL,
+            pass: MY_EMAIL_PASSWORD
+        }
     });
 
     const mailOptions = {
@@ -98,9 +104,16 @@ app.post('/send-email', (req, res) => {
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) { console.log("❌ Email Error:", error); res.status(500).send('Fail'); } 
-        else { console.log("✅ Email Sent!"); res.status(200).send('Sent'); }
+        if (error) { 
+            console.log("❌ Email Error:", error); 
+            res.status(500).send('Fail'); 
+        } 
+        else { 
+            console.log("✅ Email Sent Successfully!"); 
+            res.status(200).send('Sent'); 
+        }
     });
 });
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
