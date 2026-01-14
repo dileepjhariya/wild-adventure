@@ -115,7 +115,8 @@ if (document.getElementById('bookingForm')) {
         const amountText = totalPrice.textContent.replace("Rs. ", "").replace("₹", "");
         
         try {
-            const response = await fetch('http://localhost:3000/create-order', {
+            // 🔴 CHANGE 1: 'http://localhost:3000' hata diya hai
+            const response = await fetch('/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ amount: amountText })
@@ -167,7 +168,7 @@ if (document.getElementById('bookingForm')) {
     });
 
     // ==========================================
-    // 🎨 PRO PDF GENERATOR (Fixed Image)
+    // 🎨 PRO PDF GENERATOR
     // ==========================================
     function generateProPDF(data) {
         const { jsPDF } = window.jspdf;
@@ -218,18 +219,14 @@ if (document.getElementById('bookingForm')) {
             });
         }
 
-        // WhatsApp Section (With Safety Check)
+        // WhatsApp Section
         const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 120) + 20;
         doc.setDrawColor(200, 200, 200); doc.line(14, finalY, 196, finalY);
 
         try {
-            // Updated Valid Base64 for WhatsApp Icon
-            const waIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAclBMVEVHcEz/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQBjYy/nAAAAJXRSTlMAHA0X7+7uEhEQD+7u7u7u7hAQ7u7u7u7u7hAQ7u7u7u4QEBDP2W4kAAAAgElEQVR4nO3RuQ7CQAxE0e4O5b7v+w75/29RgoKCNIho40x25Xn4w5hZ2845N7vY1nU9xQts676e4gG29VxP8QDber+f4gG29V9P8QDbeu+neIBtfdZTPMC2PuspXmBbn/UUH2Bbn/UUL7Ct/3qKB9jWez3FA2zrvZ7iAbY1M7vY1n0B/p4X3iZ122MAAAAASUVORK5CYII=";
-            
+            const waIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAclBMVEVHcEz/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQBjYy/nAAAAJXRSTlMAHA0X7+7uEhEQD+7u7u7u7hAQ7u7u7u7u7hAQ7u7u7u4QEBDP2W4kAAAAgElEQVR4nO3RuQ7CQAxE0e4O5b7v+w75/29RgoKCNIho40x25Xn4w5hZ2845N7vY1nU9xQts676e4gG29VxP8QDber+f4gG29V9P8QDbeu+neIBtfdZTPMC2PuspXmBbn/UUH2Bbn/UUL7Ct/3qKB9jWez3FA2zrvZ7iAbY1M7vY1nUB/p4X3iZ122MAAAAASUVORK5CYII=";
             doc.addImage(waIcon, 'PNG', 14, finalY + 5, 8, 8);
-        } catch (imgError) {
-            console.log("Image load failed, generating PDF without icon.");
-        }
+        } catch (imgError) { console.log("Logo error ignored"); }
 
         doc.setFontSize(14); doc.setTextColor(37, 211, 102); doc.setFont("helvetica", "bold");
         doc.text("Chat on WhatsApp", 26, finalY + 11);
@@ -242,7 +239,8 @@ if (document.getElementById('bookingForm')) {
 
     // --- SEND EMAIL ---
     function sendDataToBackend(data) {
-        fetch('http://localhost:3000/send-email', {
+        // 🔴 CHANGE 2: 'http://localhost:3000' hata diya hai
+        fetch('/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
