@@ -9,16 +9,18 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); 
 
-// 🔴 SETTINGS (Brevo Wali Details Dalein)
+// 🔴 RAZORPAY SETTINGS (Test Mode)
 const RAZORPAY_KEY_ID = 'rzp_test_S2gHdEXUA554D9';
 const RAZORPAY_KEY_SECRET = 'Q6g7wvjFMoSa5dN5wSm5IsqC';
 
-// 👇 YAHAN DHAYAAN DEIN 👇
-const MY_EMAIL = 'wildadventure1998@gmail.com'; // Aapka Email (Login wala)
-const MY_EMAIL_PASSWORD = process.env.BREVO_KEY; // 🔴 YAHAN BREVO KI GENERATED KEY DALEIN
+// 🔴 EMAIL SETTINGS (Brevo)
+const MY_EMAIL = 'wildadventure1998@gmail.com'; 
+// Note: Password ab Render ke "Environment Variable" se aayega (Secure Tareeka)
+const MY_EMAIL_PASSWORD = process.env.BREVO_KEY; 
 
 const razorpay = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
 
+// --- ORDER CREATE API ---
 app.post('/create-order', async (req, res) => {
     try {
         const options = {
@@ -31,11 +33,12 @@ app.post('/create-order', async (req, res) => {
     } catch (error) { res.status(500).send(error); }
 });
 
-// 🔴 EMAIL LOGIC (VIA BREVO SMTP)
+// --- EMAIL SEND API (Fixed with Port 2525) ---
 app.post('/send-email', (req, res) => {
-    console.log("📨 Sending Email via Brevo...");
+    console.log("📨 Sending Email via Brevo (Port 2525)...");
     const data = req.body;
 
+    // Passenger List HTML banana
     let passengerRows = '';
     if (data.passengers && data.passengers.length > 0) {
         data.passengers.forEach((p, index) => {
@@ -53,19 +56,20 @@ app.post('/send-email', (req, res) => {
         passengerRows = '<tr><td colspan="5">No Passenger Data</td></tr>';
     }
 
+    // 🛠️ MAGIC FIX: Port 2525 use kiya hai jo kabhi block nahi hota
     const transporter = nodemailer.createTransport({
-        host: 'smtp-relay.brevo.com', // Brevo ka Server
-        port: 587,
+        host: 'smtp-relay.brevo.com',
+        port: 2525,              // 👈 SABSE ZAROORI CHANGE
         secure: false, 
         auth: {
-            user: MY_EMAIL,     // Aapka Login Email
-            pass: MY_EMAIL_PASSWORD // Brevo SMTP Key
+            user: MY_EMAIL,
+            pass: MY_EMAIL_PASSWORD // Render se key uthayega
         }
     });
 
     const mailOptions = {
-        from: `Wild Adventure <${MY_EMAIL}>`, // Sender Name dikhega
-        to: MY_EMAIL, 
+        from: `Wild Adventure <${MY_EMAIL}>`,
+        to: MY_EMAIL, // Filhal aapko hi mail aayega (check karne ke liye)
         subject: `🐅 Booking Alert: ${data.name} (${data.passengers.length} Persons)`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #ddd;">
@@ -110,7 +114,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Fail'); 
         } 
         else { 
-            console.log("✅ Email Sent via Brevo!"); 
+            console.log("✅ Email Sent Successfully via Port 2525!"); 
             res.status(200).send('Sent'); 
         }
     });
