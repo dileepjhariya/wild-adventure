@@ -9,11 +9,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); 
 
-// 🔴 SETTINGS (Apna Password check kar lein)
+// 🔴 SETTINGS (Brevo Wali Details Dalein)
 const RAZORPAY_KEY_ID = 'rzp_test_S2gHdEXUA554D9';
 const RAZORPAY_KEY_SECRET = 'Q6g7wvjFMoSa5dN5wSm5IsqC';
-const MY_EMAIL = 'wildadventure1998@gmail.com'; 
-const MY_EMAIL_PASSWORD = 'dbmopxsdxxieimmr'; // 🔴 APNA 16-DIGIT APP PASSWORD YAHAN DALEIN
+
+// 👇 YAHAN DHAYAAN DEIN 👇
+const MY_EMAIL = 'wildadventure1998@gmail.com'; // Aapka Email (Login wala)
+const MY_EMAIL_PASSWORD = process.env.BREVO_KEY; // 🔴 YAHAN BREVO KI GENERATED KEY DALEIN
 
 const razorpay = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
 
@@ -29,9 +31,9 @@ app.post('/create-order', async (req, res) => {
     } catch (error) { res.status(500).send(error); }
 });
 
-// 🔴 EMAIL LOGIC (UPDATED: Port 587)
+// 🔴 EMAIL LOGIC (VIA BREVO SMTP)
 app.post('/send-email', (req, res) => {
-    console.log("📨 Sending Email via Port 587...");
+    console.log("📨 Sending Email via Brevo...");
     const data = req.body;
 
     let passengerRows = '';
@@ -51,19 +53,18 @@ app.post('/send-email', (req, res) => {
         passengerRows = '<tr><td colspan="5">No Passenger Data</td></tr>';
     }
 
-    // 🛠️ YAHAN CHANGE KIYA HAI (Port 587 - Universal Port)
     const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,              // Ye port kabhi block nahi hota
-        secure: false,          // 587 ke liye ise false rakhte hain
+        host: 'smtp-relay.brevo.com', // Brevo ka Server
+        port: 587,
+        secure: false, 
         auth: {
-            user: MY_EMAIL,
-            pass: MY_EMAIL_PASSWORD
+            user: MY_EMAIL,     // Aapka Login Email
+            pass: MY_EMAIL_PASSWORD // Brevo SMTP Key
         }
     });
 
     const mailOptions = {
-        from: MY_EMAIL,
+        from: `Wild Adventure <${MY_EMAIL}>`, // Sender Name dikhega
         to: MY_EMAIL, 
         subject: `🐅 Booking Alert: ${data.name} (${data.passengers.length} Persons)`,
         html: `
@@ -109,7 +110,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Fail'); 
         } 
         else { 
-            console.log("✅ Email Sent Successfully via Port 587!"); 
+            console.log("✅ Email Sent via Brevo!"); 
             res.status(200).send('Sent'); 
         }
     });
