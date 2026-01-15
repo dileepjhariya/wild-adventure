@@ -9,18 +9,17 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); 
 
-// 🔴 RAZORPAY SETTINGS (Test Mode)
+// 🔴 RAZORPAY SETTINGS
 const RAZORPAY_KEY_ID = 'rzp_test_S2gHdEXUA554D9';
 const RAZORPAY_KEY_SECRET = 'Q6g7wvjFMoSa5dN5wSm5IsqC';
 
-// 🔴 EMAIL SETTINGS (Brevo)
+// 🔴 EMAIL SETTINGS (Updated for Brevo)
 const MY_EMAIL = 'wildadventure1998@gmail.com'; 
-// Note: Password ab Render ke "Environment Variable" se aayega (Secure Tareeka)
-const MY_EMAIL_PASSWORD = process.env.BREVO_KEY; 
+const MY_EMAIL_PASSWORD = process.env.BREVO_KEY; // Key Render se aayegi
 
 const razorpay = new Razorpay({ key_id: RAZORPAY_KEY_ID, key_secret: RAZORPAY_KEY_SECRET });
 
-// --- ORDER CREATE API ---
+// --- ORDER API ---
 app.post('/create-order', async (req, res) => {
     try {
         const options = {
@@ -33,12 +32,11 @@ app.post('/create-order', async (req, res) => {
     } catch (error) { res.status(500).send(error); }
 });
 
-// --- EMAIL SEND API (Fixed with Port 2525) ---
+// --- EMAIL API (Secure Port 2525) ---
 app.post('/send-email', (req, res) => {
-    console.log("📨 Sending Email via Brevo (Port 2525)...");
+    console.log("📨 Sending Email via Brevo...");
     const data = req.body;
 
-    // Passenger List HTML banana
     let passengerRows = '';
     if (data.passengers && data.passengers.length > 0) {
         data.passengers.forEach((p, index) => {
@@ -56,21 +54,21 @@ app.post('/send-email', (req, res) => {
         passengerRows = '<tr><td colspan="5">No Passenger Data</td></tr>';
     }
 
-    // 🛠️ MAGIC FIX: Port 2525 use kiya hai jo kabhi block nahi hota
+    // 🛠️ MAGIC FIX: Port 2525
     const transporter = nodemailer.createTransport({
         host: 'smtp-relay.brevo.com',
-        port: 2525,              // 👈 SABSE ZAROORI CHANGE
+        port: 2525,              
         secure: false, 
         auth: {
             user: MY_EMAIL,
-            pass: MY_EMAIL_PASSWORD // Render se key uthayega
+            pass: MY_EMAIL_PASSWORD 
         }
     });
 
     const mailOptions = {
         from: `Wild Adventure <${MY_EMAIL}>`,
-        to: MY_EMAIL, // Filhal aapko hi mail aayega (check karne ke liye)
-        subject: `🐅 Booking Alert: ${data.name} (${data.passengers.length} Persons)`,
+        to: MY_EMAIL, 
+        subject: `🐅 Booking Alert: ${data.name} (${data.vehicle})`,
         html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #ddd;">
                 <h2 style="background: #28a745; color: white; padding: 10px; margin: 0; text-align: center;">New Booking Confirmed</h2>
@@ -78,11 +76,10 @@ app.post('/send-email', (req, res) => {
                 <div style="padding: 20px;">
                     <h3>📍 Trip Details</h3>
                     <p><strong>Booked By:</strong> ${data.name}</p>
-                    <p><strong>Mobile:</strong> ${data.mobile}</p>
+                    <p><strong>Safari Type:</strong> ${data.vehicle}</p>
                     <p><strong>Date:</strong> ${data.date}</p>
                     <p><strong>Shift:</strong> ${data.shift}</p>
                     <p><strong>Gate:</strong> ${data.gate}</p>
-                    <p><strong>Vehicle:</strong> ${data.vehicle}</p>
                     <p><strong>Total Amount:</strong> ₹${data.amount}</p>
                     <p><strong>Payment ID:</strong> ${data.payment_id}</p>
 
@@ -114,7 +111,7 @@ app.post('/send-email', (req, res) => {
             res.status(500).send('Fail'); 
         } 
         else { 
-            console.log("✅ Email Sent Successfully via Port 2525!"); 
+            console.log("✅ Email Sent Successfully!"); 
             res.status(200).send('Sent'); 
         }
     });

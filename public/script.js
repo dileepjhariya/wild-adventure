@@ -15,20 +15,6 @@ document.onkeydown = function(e) {
 // 🚀 MAIN LOGIC
 // ============================================
 
-function startSlider(cls, time) {
-    let idx = 0; const slides = document.getElementsByClassName(cls);
-    if (!slides.length) return;
-    function show() {
-        for (let i=0; i<slides.length; i++) slides[i].style.display = "none";
-        idx++; if(idx > slides.length) idx=1;
-        slides[idx-1].style.display = "block";
-    }
-    show(); setInterval(show, time);
-}
-startSlider('top-slide', 3000);
-startSlider('guide-normal-slide', 2500);
-startSlider('guide-expert-slide', 2500);
-
 if (document.getElementById('bookingForm')) {
     // Variables
     const entryGate = document.getElementById('entryGate');
@@ -44,14 +30,21 @@ if (document.getElementById('bookingForm')) {
     const dateInput = document.getElementById('date');
 
     const zoneMapping = { 'Khatiya Gate': 'Khatiya Buffer', 'Mukki Gate': 'Khapa Buffer', 'Sarhi Gate': 'Sijhora Buffer' };
+    
+    // 🛠️ UPDATED PRICES
     const PRICE_SIMPLE = 9000;
     const PRICE_MODIFIED = 10000;
 
-    // Price Update
+    // Price Update Logic
     entryGate.addEventListener('change', () => { zoneName.value = zoneMapping[entryGate.value]; });
     
     function updatePrice() {
-        totalPrice.textContent = (vehicleType.value === 'Modified Vehicle') ? "Rs. " + PRICE_MODIFIED : "Rs. " + PRICE_SIMPLE;
+        // 🛠️ CHECK FOR PREMIUM SAFARI
+        if (vehicleType.value === 'Premium Safari') {
+            totalPrice.textContent = "Rs. " + PRICE_MODIFIED;
+        } else {
+            totalPrice.textContent = "Rs. " + PRICE_SIMPLE;
+        }
     }
     vehicleType.addEventListener('change', updatePrice);
 
@@ -115,7 +108,6 @@ if (document.getElementById('bookingForm')) {
         const amountText = totalPrice.textContent.replace("Rs. ", "").replace("₹", "");
         
         try {
-            // 🔴 CHANGE 1: 'http://localhost:3000' hata diya hai
             const response = await fetch('/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -137,11 +129,7 @@ if (document.getElementById('bookingForm')) {
                 "handler": function (response) {
                     try {
                         const finalData = getAllBookingData(response.razorpay_payment_id);
-                        
-                        // 1. PDF Try
                         generateProPDF(finalData);
-                        
-                        // 2. Email Try
                         sendDataToBackend(finalData);
                         
                         alert("✅ Booking Success! Ticket Downloaded & Email Sent.");
@@ -197,6 +185,9 @@ if (document.getElementById('bookingForm')) {
         doc.setFont("helvetica", "bold"); doc.text("Booked By:", 20, 95);
         doc.setFont("helvetica", "normal"); doc.text(data.name, 50, 95);
 
+        doc.setFont("helvetica", "bold"); doc.text("Vehicle:", 110, 65);
+        doc.setFont("helvetica", "normal"); doc.text(data.vehicle, 140, 65);
+
         doc.setFont("helvetica", "bold"); doc.text("Total Paid:", 110, 85);
         doc.setTextColor(34, 139, 34);
         doc.setFont("helvetica", "bold"); doc.text(String(data.amount), 140, 85);
@@ -224,7 +215,7 @@ if (document.getElementById('bookingForm')) {
         doc.setDrawColor(200, 200, 200); doc.line(14, finalY, 196, finalY);
 
         try {
-            const waIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAclBMVEVHcEz/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQBjYy/nAAAAJXRSTlMAHA0X7+7uEhEQD+7u7u7u7hAQ7u7u7u7u7hAQ7u7u7u4QEBDP2W4kAAAAgElEQVR4nO3RuQ7CQAxE0e4O5b7v+w75/29RgoKCNIho40x25Xn4w5hZ2845N7vY1nU9xQts676e4gG29VxP8QDber+f4gG29V9P8QDbeu+neIBtfdZTPMC2PuspXmBbn/UUH2Bbn/UUL7Ct/3qKB9jWez3FA2zrvZ7iAbY1M7vY1nUB/p4X3iZ122MAAAAASUVORK5CYII=";
+            const waIcon = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAclBMVEVHcEz/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQD/nQBjYy/nAAAAJXRSTlMAHA0X7+7uEhEQD+7u7u7u7hAQ7u7u7u7u7hAQ7u7u7u4QEBDP2W4kAAAAgElEQVR4nO3RuQ7CQAxE0e4O5b7v+w75/29RgoKCNIho40x25Xn4w5hZ2845N7vY1nU9xQts676e4gG29VxP8QDber+f4gG29V9P8QDbeu+neIBtfdZTPMC2PuspXmBbn/UUH2Bbn/UUL7Ct/3qKB9jWez3FA2zrvZ7iAbY1M7vY1nUB/p4X3iZ122MAAAAASUVORK5CYII=";
             doc.addImage(waIcon, 'PNG', 14, finalY + 5, 8, 8);
         } catch (imgError) { console.log("Logo error ignored"); }
 
@@ -239,7 +230,6 @@ if (document.getElementById('bookingForm')) {
 
     // --- SEND EMAIL ---
     function sendDataToBackend(data) {
-        // 🔴 CHANGE 2: 'http://localhost:3000' hata diya hai
         fetch('/send-email', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
