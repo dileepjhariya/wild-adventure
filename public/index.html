@@ -3,116 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wild Adventure - Safari Booking</title>
+    <title>Wild Adventure Kanha</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Oswald:wght@500&family=Roboto:wght@300&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="home-page">
 
-    <header>
-        <div class="logo">Wild Adventure</div>
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">Destinations</a>
-            <a href="#">Packages</a>
-            <a href="#">Contact</a>
-        </nav>
+    <header class="home-header">
+        <div class="logo">🌲 Wild Adventure</div>
+        <div class="header-right">
+            <span class="contact-info">📧 wildadventure1998@gmail.com</span>
+            <a href="booking.html" class="top-btn">Book Safari</a>
+        </div>
     </header>
 
-    <div class="hero">
-        <div class="hero-text">
-            <h1>Experience the Wild</h1>
-            <p>Book your Jungle Safari permit instantly.</p>
+    <section class="top-section">
+        <div class="top-slide fade"><img src="image/image2.jpg" alt="Img 2"><div class="caption">Welcome to Kanha</div></div>
+        <div class="top-slide fade"><img src="image/image3.jpg" alt="Img 3"><div class="caption">Land of Tigers</div></div>
+        <div class="top-slide fade"><img src="image/image4.jpg" alt="Img 4"><div class="caption">Jungle Safari</div></div>
+        <div class="top-slide fade"><img src="image/image5.jpg" alt="Img 5"><div class="caption">Wild Nature</div></div>
+        <div class="top-slide fade"><img src="image/image6.jpg" alt="Img 6"><div class="caption">Deep Forests</div></div>
+        <div class="top-slide fade"><img src="image/image7.jpg" alt="Img 7"><div class="caption">Wildlife Photography</div></div>
+        <div class="top-slide fade"><img src="image/image8.jpg" alt="Img 8"><div class="caption">Bird Watching</div></div>
+        <div class="top-slide fade"><img src="image/image9.jpg" alt="Img 9"><div class="caption">Adventure Awaits</div></div>
+        <div class="top-slide fade"><img src="image/image10.jpg" alt="Img 10"><div class="caption">Save Nature</div></div>
+        <div class="top-slide fade"><img src="image/image12.jpg" alt="Img 12"><div class="caption">Book Now</div></div>
+    </section>
+
+    <section class="split-section">
+        <h2 class="section-title">Choose Your Vehicle</h2>
+        <div class="row">
+            <div class="col">
+                <div class="card fixed-card">
+                    <img src="image/vehicle_simple.jpg" alt="Simple Vehicle">
+                    <h3>Normal Safari</h3>
+                    <p>Open Gypsy, Standard Comfort.</p>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card fixed-card">
+                    <img src="image/vehicle_modified.jpg" alt="Modified Vehicle">
+                    <h3>Premium Safari</h3>
+                    <p>Extra Cushioning, Photography Angles.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div class="container">
-        <h2 style="text-align: center; color: #2e7d32;">Safari Booking Form</h2>
-        
-        <form id="bookingForm">
-            
-            <div class="form-section">
-                <h3><i class="fas fa-map-marker-alt"></i> Trip Details</h3>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Select Date</label>
-                        <input type="date" id="date" required>
+    <section class="split-section dark-bg">
+        <h2 class="section-title" style="color: #ffd700;">Meet Our Guides</h2>
+        <div class="row">
+            <div class="col">
+                <div class="card slider-card">
+                    <h3>Normal Guide</h3>
+                    <div class="mini-slider-container">
+                        <img class="guide-normal-slide fade" src="image/guide_normal1.jpg" alt="N-Guide 1">
+                        <img class="guide-normal-slide fade" src="image/guide_normal2.jpg" alt="N-Guide 2">
                     </div>
-                    <div class="input-group">
-                        <label>Select Shift</label>
-                        <select id="safariShift">
-                            <option>Morning</option>
-                            <option>Evening</option>
-                            <option>Full Day</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Entry Gate</label>
-                        <select id="entryGate">
-                            <option>Khatiya Gate</option>
-                            <option>Mukki Gate</option>
-                            <option>Sarhi Gate</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Zone</label>
-                        <input type="text" id="zoneName" value="Khatiya Buffer" readonly>
-                    </div>
-                </div>
-
-                <div class="input-group">
-                    <label><i class="fas fa-jeep"></i> Safari Type</label>
-                    <select id="vehicleType" required>
-                        <option value="Normal Safari">Normal Safari</option>
-                        <option value="Premium Safari">Premium Safari (Modified)</option>
-                    </select>
+                    <p>Standard Park Guide.</p>
                 </div>
             </div>
-
-            <div class="form-section">
-                <h3><i class="fas fa-users"></i> Member Details</h3>
-                <div class="input-group">
-                    <label>Total Persons</label>
-                    <input type="number" id="persons" min="1" max="6" value="1">
-                </div>
-                
-                <div id="passengers-container">
+            <div class="col">
+                <div class="card slider-card">
+                    <h3>Expert Naturalist</h3>
+                    <div class="mini-slider-container">
+                        <img class="guide-expert-slide fade" src="image/guide_expert1.jpg" alt="E-Guide 1">
+                        <img class="guide-expert-slide fade" src="image/guide_expert2.jpg" alt="E-Guide 2">
                     </div>
-            </div>
-
-            <div class="form-section">
-                <h3><i class="fas fa-address-book"></i> Contact Info</h3>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Mobile Number</label>
-                        <input type="tel" id="mobileNumber" placeholder="10-digit number" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Email Address</label>
-                        <input type="email" id="userEmail" placeholder="For Ticket PDF" required>
-                    </div>
+                    <p>Specialist in Tracking & Birding.</p>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="total-price-box">
-                <span>Total Amount:</span>
-                <span id="totalPrice">Rs. 9000</span>
-            </div>
+    <section class="bottom-cta">
+        <a href="booking.html" class="big-btn">Proceed to Book Now</a>
+    </section>
 
-            <button type="submit" class="pay-btn">Proceed to Pay</button>
-        </form>
-    </div>
-
-    <footer>
-        <p>&copy; 2024 Wild Adventure. All rights reserved.</p>
-    </footer>
-
+    <footer>© 2026 Wild Adventure. Contact: wildadventure1998@gmail.com</footer>
     <script src="script.js"></script>
 </body>
 </html>

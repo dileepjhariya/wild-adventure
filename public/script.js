@@ -12,7 +12,26 @@ document.onkeydown = function(e) {
 };
 
 // ============================================
-// 🚀 MAIN LOGIC
+// 🖼️ SLIDER LOGIC (YE WAPAS AA GAYA HAI)
+// ============================================
+function startSlider(cls, time) {
+    let idx = 0; const slides = document.getElementsByClassName(cls);
+    if (!slides.length) return;
+    function show() {
+        for (let i=0; i<slides.length; i++) slides[i].style.display = "none";
+        idx++; if(idx > slides.length) idx=1;
+        slides[idx-1].style.display = "block";
+    }
+    show(); setInterval(show, time);
+}
+// Apke teeno sliders start honge
+startSlider('top-slide', 3000);
+startSlider('guide-normal-slide', 2500);
+startSlider('guide-expert-slide', 2500);
+
+
+// ============================================
+// 🚀 BOOKING & PAYMENT LOGIC
 // ============================================
 
 if (document.getElementById('bookingForm')) {
@@ -31,15 +50,15 @@ if (document.getElementById('bookingForm')) {
 
     const zoneMapping = { 'Khatiya Gate': 'Khatiya Buffer', 'Mukki Gate': 'Khapa Buffer', 'Sarhi Gate': 'Sijhora Buffer' };
     
-    // 🛠️ UPDATED PRICES
+    // 🛠️ UPDATED PRICES (Normal vs Premium)
     const PRICE_SIMPLE = 9000;
-    const PRICE_MODIFIED = 10000;
+    const PRICE_MODIFIED = 10000; // Premium Rate
 
-    // Price Update Logic
+    // Gate Change Logic
     entryGate.addEventListener('change', () => { zoneName.value = zoneMapping[entryGate.value]; });
     
+    // Price Calculation Logic
     function updatePrice() {
-        // 🛠️ CHECK FOR PREMIUM SAFARI
         if (vehicleType.value === 'Premium Safari') {
             totalPrice.textContent = "Rs. " + PRICE_MODIFIED;
         } else {
@@ -48,7 +67,7 @@ if (document.getElementById('bookingForm')) {
     }
     vehicleType.addEventListener('change', updatePrice);
 
-    // Form Generator
+    // Form Generator (Passengers)
     function generatePassengerForms() {
         let count = parseInt(personsInput.value);
         if (count < 1) count = 1; if (count > 6) { count = 6; personsInput.value = 6; }
@@ -108,6 +127,7 @@ if (document.getElementById('bookingForm')) {
         const amountText = totalPrice.textContent.replace("Rs. ", "").replace("₹", "");
         
         try {
+            // Live Server Call
             const response = await fetch('/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -129,7 +149,11 @@ if (document.getElementById('bookingForm')) {
                 "handler": function (response) {
                     try {
                         const finalData = getAllBookingData(response.razorpay_payment_id);
+                        
+                        // 1. Generate PDF
                         generateProPDF(finalData);
+                        
+                        // 2. Send Email
                         sendDataToBackend(finalData);
                         
                         alert("✅ Booking Success! Ticket Downloaded & Email Sent.");
@@ -156,7 +180,7 @@ if (document.getElementById('bookingForm')) {
     });
 
     // ==========================================
-    // 🎨 PRO PDF GENERATOR
+    // 🎨 PRO PDF GENERATOR (Aapka WhatsApp wala ticket)
     // ==========================================
     function generateProPDF(data) {
         const { jsPDF } = window.jspdf;
@@ -185,7 +209,7 @@ if (document.getElementById('bookingForm')) {
         doc.setFont("helvetica", "bold"); doc.text("Booked By:", 20, 95);
         doc.setFont("helvetica", "normal"); doc.text(data.name, 50, 95);
 
-        doc.setFont("helvetica", "bold"); doc.text("Vehicle:", 110, 65);
+        doc.setFont("helvetica", "bold"); doc.text("Safari Type:", 110, 65);
         doc.setFont("helvetica", "normal"); doc.text(data.vehicle, 140, 65);
 
         doc.setFont("helvetica", "bold"); doc.text("Total Paid:", 110, 85);
@@ -237,6 +261,7 @@ if (document.getElementById('bookingForm')) {
         });
     }
 
+    // Initialize Forms
     updatePrice();
     generatePassengerForms();
 }
